@@ -35,7 +35,8 @@ class RoomManager {
     if (process.env.NODE_ENV === "development") {
       this.socket = io("localhost:3001");
     } else {
-      this.socket = io("socket.xulin.fun");
+      // this.socket = io("socket.xulin.fun");
+      this.socket = io("ws://182.92.161.178:3001");
     }
 
     this.socket.on("joined", (roomId, socketId, userCount) => {
