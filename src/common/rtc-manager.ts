@@ -2,15 +2,26 @@ import { streamManager } from "./stream-manager";
 import { roomManager } from "./room-manager";
 import { logger } from "./logger-manager";
 
+export interface RTCStatsInfo {
+  mediaType: "audio" | "video";
+  packetsReceived?: number;
+  packetsLost?: number;
+  bytesReceived?: number;
+  jitter?: number;
+}
+
 export class RTCManager {
   private connection: RTCPeerConnection;
+  private receiver: RTCRtpReceiver;
   public rtcMessage: string = "";
+  public rtcAudioStatsInfo: RTCStatsInfo;
+  public rtcVideoStatsInfo: RTCStatsInfo;
 
   constructor() {
     this.connection = new RTCPeerConnection({
       iceServers: [
         {
-          urls: "turn:xulin.fun:3478",
+          urls: "turn:leylalee.top:3478",
           username: "aaaaaa",
           credential: "bbbbbb",
         },
@@ -18,6 +29,23 @@ export class RTCManager {
       iceTransportPolicy: "relay",
       iceCandidatePoolSize: 0,
     });
+
+    this.receiver = this.connection.getReceivers()[0];
+    this.rtcAudioStatsInfo = {
+      mediaType: "audio",
+      packetsReceived: 0,
+      packetsLost: 0,
+      bytesReceived: 0,
+      jitter: 0,
+    };
+
+    this.rtcVideoStatsInfo = {
+      mediaType: "video",
+      packetsReceived: 0,
+      packetsLost: 0,
+      bytesReceived: 0,
+      jitter: 0,
+    };
 
     this.connection.addEventListener("icecandidate", (e) => {
       console.log(`icecandidate: ${e.candidate}`);
@@ -32,12 +60,6 @@ export class RTCManager {
       console.log("track", e);
       logger.addLogMessage(`track: ${e}`, "rtc");
       streamManager.addTrackToRemoteStream(e.track);
-      // setInterval(async () => {
-      //   const stats = await this.connection.getStats(e.track);
-      //   stats.forEach((e) => {
-      //     console.log("stats", e);
-      //   });
-      // }, 1000);
     });
 
     this.connection.addEventListener("iceconnectionstatechange", (e) => {
@@ -116,6 +138,17 @@ export class RTCManager {
     await this.connection.addIceCandidate(candidate);
     logger.addLogMessage("IceCandidate added\n", "rtc");
     console.log(`IceCandidate added`);
+  }
+
+  async getReceiverStats() {
+    const stats = await this.receiver?.getStats();
+    if (stats) {
+      stats.forEach((e: RTCStats & RTCReceivedRtpStreamStats) => {
+        if (e.type === "inbound-rtp") {
+          console.log("stats", e);
+        }
+      });
+    }
   }
 
   getMessage() {

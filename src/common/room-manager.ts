@@ -13,7 +13,6 @@ export type RoomStateChangListener = (state: RoomState) => void;
 export interface RoomEventMap {
   roomStateChange: RoomStateChangListener;
 }
-
 class RoomManager {
   private roomId: number | undefined;
 
@@ -36,9 +35,9 @@ class RoomManager {
       this.socket = io("localhost:3001");
     } else {
       // this.socket = io("socket.xulin.fun");
-      this.socket = io("ws://182.92.161.178:3001");
+      this.socket = io("https://leylalee.top/socket");
     }
-
+    // this.socket = io("ws://182.92.161.178:3001");
     this.socket.on("joined", (roomId, socketId, userCount) => {
       logger.addLogMessage(
         `receive joined message: ${roomId} ${socketId} ${userCount}\n`,
@@ -129,6 +128,10 @@ class RoomManager {
     this.socket?.emit("leave", this.roomId);
     this.rtcManager?.close();
     this.rtcManager = undefined;
+  }
+
+  sendReceiverStats() {
+    this.rtcManager?.getReceiverStats();
   }
 
   addListener<K extends keyof RoomEventMap>(

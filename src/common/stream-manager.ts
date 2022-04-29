@@ -99,6 +99,7 @@ class StreamManager {
     this.remoteStream = null;
     this.remoteStreamChangeListeners.forEach((listener) => {
       listener(this.remoteStream);
+      console.log("remote", this.remoteStream);
     });
   }
 

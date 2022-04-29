@@ -7,6 +7,7 @@ import {
   DevicesSetup,
   RoomSetup,
   Logger,
+  StatsPanel,
 } from "../../components";
 import "./style.scss";
 import { useDevice, useLocalStream, useRoom } from "./hooks";
@@ -45,6 +46,9 @@ export const Producer: React.FC = () => {
             enterDisabled={!localStreamReady || roomState !== RoomState.leave}
             leaveDisabled={roomState === RoomState.leave}
           />
+        </PaperSection>
+        <PaperSection elevation={8}>
+          <StatsPanel />
         </PaperSection>
       </Grid>
       <Grid item xs sx={{ height: "100%" }}>
