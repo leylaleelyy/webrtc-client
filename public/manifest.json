@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "WebRTC WebApp",
+  "name": "Create React WebRTC WebApp",
   "icons": [
     {
       "src": "favicon.ico",

@@ -17,7 +17,7 @@ export const LivePlayer: FC<LivePlayerProps> = ({ videoRef, loading }) => {
   return (
     <div className="live-player-container">
       {loading && <Loading />}
-      <video ref={videoRef} autoPlay muted />
+      <video ref={videoRef} autoPlay playsInline muted />
     </div>
   );
 };

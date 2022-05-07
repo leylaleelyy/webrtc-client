@@ -6,8 +6,7 @@ import {
   LocalPreview,
   DevicesSetup,
   RoomSetup,
-  Logger,
-  StatsPanel,
+  StatsChart,
 } from "../../components";
 import "./style.scss";
 import { useDevice, useLocalStream, useRoom } from "./hooks";
@@ -22,6 +21,8 @@ export const Producer: React.FC = () => {
     audioSelected,
     videoDevices,
     audioDevices,
+    desktopSelected,
+    handleDesktopSelect,
     handleVideoSelect,
     handleAudioSelect,
     handleReset,
@@ -38,6 +39,8 @@ export const Producer: React.FC = () => {
             onAudioSelect={handleAudioSelect}
             videoSelected={videoSelected}
             audioSelected={audioSelected}
+            desktopSelected={desktopSelected}
+            onDesktopSelect={handleDesktopSelect}
             onReset={handleReset}
           />
         </PaperSection>
@@ -47,22 +50,20 @@ export const Producer: React.FC = () => {
             leaveDisabled={roomState === RoomState.leave}
           />
         </PaperSection>
-        <PaperSection elevation={8}>
-          <StatsPanel />
-        </PaperSection>
       </Grid>
       <Grid item xs sx={{ height: "100%" }}>
         <PaperSection elevation={8}>
           <LocalPreview
             videoSelected={videoSelected}
             audioSelected={audioSelected}
+            displayDesktop={desktopSelected}
           />
           <RemoteVideo />
         </PaperSection>
       </Grid>
       <Grid item xs={3} sx={{ height: "100%", maxHeight: "100%" }}>
         <PaperSection elevation={8}>
-          <Logger />
+          <StatsChart />
         </PaperSection>
       </Grid>
     </Grid>

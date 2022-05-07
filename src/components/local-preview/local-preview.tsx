@@ -6,11 +6,13 @@ import "./style.scss";
 export interface LocalPreviewProps {
   videoSelected?: string;
   audioSelected?: string;
+  displayDesktop?: boolean;
 }
 
 export const LocalPreview: React.FC<LocalPreviewProps> = ({
   videoSelected = "",
   audioSelected = "",
+  displayDesktop = false,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,8 +34,8 @@ export const LocalPreview: React.FC<LocalPreviewProps> = ({
   }, []);
 
   useEffect(() => {
-    streamManager.start(videoSelected, audioSelected);
-  }, [videoSelected, audioSelected]);
+    streamManager.start(videoSelected, audioSelected, displayDesktop);
+  }, [videoSelected, audioSelected, displayDesktop]);
 
   return (
     <div className="container">

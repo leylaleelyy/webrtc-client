@@ -41,8 +41,9 @@ export const RoomSetup: FC<RoomSetupProps> = ({
           variant="contained"
           onClick={handleJoin}
           disabled={enterDisabled}
+          sx={{ marginRight: 1 }}
         >
-          Enter Room
+          Enter
         </Button>
 
         <Button
@@ -51,7 +52,7 @@ export const RoomSetup: FC<RoomSetupProps> = ({
           onClick={handleLeft}
           disabled={leaveDisabled}
         >
-          Leave Room
+          Leave
         </Button>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client";
-import { logger } from "./logger-manager";
+import { ChartManager } from ".";
 import { RTCManager } from "./rtc-manager";
 
 export enum RoomState {
@@ -22,6 +22,8 @@ class RoomManager {
 
   private rtcManager: RTCManager | undefined;
 
+  public statsChart: ChartManager | undefined;
+
   private roomStateChangeListeners: RoomStateChangListener[] = [];
 
   private setState(state: RoomState) {
@@ -34,21 +36,17 @@ class RoomManager {
     if (process.env.NODE_ENV === "development") {
       this.socket = io("localhost:3001");
     } else {
-      // this.socket = io("socket.xulin.fun");
-      this.socket = io("https://leylalee.top/socket");
+      this.socket = io("https://socket.leylalee.top");
     }
-    // this.socket = io("ws://182.92.161.178:3001");
+    this.socket = io("https://socket.leylalee.top");
     this.socket.on("joined", (roomId, socketId, userCount) => {
-      logger.addLogMessage(
-        `receive joined message: ${roomId} ${socketId} ${userCount}\n`,
-        "room"
-      );
       console.log(`receive joined message: ${roomId} ${socketId} ${userCount}`);
       this.roomId = roomId;
       this.setState(RoomState.joined);
 
       if (userCount > 1) {
         this.rtcManager = new RTCManager();
+        this.rtcManager.setChart(this.statsChart);
       }
     });
 
@@ -57,6 +55,7 @@ class RoomManager {
 
       if (!this.rtcManager) {
         this.rtcManager = new RTCManager();
+        this.rtcManager.setChart(this.statsChart);
       }
 
       this.rtcManager.createOffer().then((offer) => {
@@ -130,10 +129,6 @@ class RoomManager {
     this.rtcManager = undefined;
   }
 
-  sendReceiverStats() {
-    this.rtcManager?.getReceiverStats();
-  }
-
   addListener<K extends keyof RoomEventMap>(
     type: K,
     listener: RoomEventMap[K]
@@ -153,6 +148,12 @@ class RoomManager {
         this.roomStateChangeListeners.splice(targetIndex, 1);
       }
     }
+  }
+
+  initStatsChart(ctx: CanvasRenderingContext2D) {
+    this.statsChart = new ChartManager(ctx);
+
+    return this.statsChart;
   }
 }
 

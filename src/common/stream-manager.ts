@@ -21,21 +21,39 @@ class StreamManager {
     });
   }
 
-  start(videoDid: string, audioDid: string) {
-    if (videoDid && audioDid) {
-      navigator.mediaDevices
-        .getUserMedia({
-          video: {
-            deviceId: {
-              exact: videoDid,
-            },
-          },
-          audio: {
-            deviceId: {
-              exact: audioDid,
-            },
-          },
+  handleDevice(videoDid: string, audioDid: string) {
+    return navigator.mediaDevices.getUserMedia({
+      video: {
+        deviceId: {
+          exact: videoDid,
+        },
+      },
+      audio: {
+        deviceId: {
+          exact: audioDid,
+        },
+      },
+    });
+  }
+
+  handleDesktop() {
+    return navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+  }
+
+  start(videoDid: string, audioDid: string, desktop = false) {
+    if (desktop) {
+      this.handleDesktop()
+        .then((stream) => {
+          this.localStream = stream;
+          this.localStreamChangeListeners.forEach((listener) =>
+            listener(stream)
+          );
         })
+        .catch((e) => {
+          console.error("get stream error !!!", e);
+        });
+    } else if (videoDid && audioDid) {
+      this.handleDevice(videoDid, audioDid)
         .then((stream) => {
           this.localStream = stream;
           this.localStreamChangeListeners.forEach((listener) =>
