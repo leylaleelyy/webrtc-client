@@ -14,7 +14,7 @@ import {
   DvrOutlined,
   RotateLeftOutlined,
 } from "@mui/icons-material";
-import { FC, ChangeEvent } from "react";
+import { FC, ChangeEvent, useState, useEffect } from "react";
 
 export interface DeviceSetupProps {
   videoDevices: MediaDeviceInfo[];
@@ -40,6 +40,26 @@ export const DevicesSetup: FC<DeviceSetupProps> = (props) => {
     onAudioSelect: handleAudioSelect,
     onReset: handleReset,
   } = props;
+
+  const [isPC, setIsPC] = useState(true);
+
+  useEffect(() => {
+    const userAgentInfo = navigator.userAgent;
+    const agents = [
+      "Android",
+      "iPhone",
+      "SymbianOS",
+      "Windows Phone",
+      "iPad",
+      "iPod",
+    ];
+    agents.forEach((agent) => {
+      if (userAgentInfo.indexOf(agent) > 0) {
+        setIsPC(false);
+        return;
+      }
+    });
+  }, []);
 
   return (
     <Stack>
@@ -79,24 +99,26 @@ export const DevicesSetup: FC<DeviceSetupProps> = (props) => {
           ))}
         </RadioGroup>
       </FormControl>
-      <FormControl>
-        <Divider textAlign="left">
-          <DvrOutlined
-            sx={{ marginRight: 1, verticalAlign: "middle", fontSize: "24px" }}
-          />
-          <span style={{ verticalAlign: "middle" }}>Desktop Selector</span>
-        </Divider>
-
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={desktopSelected}
-              onChange={handleDesktopSelect}
+      {isPC && (
+        <FormControl>
+          <Divider textAlign="left">
+            <DvrOutlined
+              sx={{ marginRight: 1, verticalAlign: "middle", fontSize: "24px" }}
             />
-          }
-          label="Share Desktop"
-        />
-      </FormControl>
+            <span style={{ verticalAlign: "middle" }}>Desktop Selector</span>
+          </Divider>
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={desktopSelected}
+                onChange={handleDesktopSelect}
+              />
+            }
+            label="Share Desktop"
+          />
+        </FormControl>
+      )}
       <Button onClick={handleReset}>
         <RotateLeftOutlined sx={{ marginRight: 1 }} />
         Reset

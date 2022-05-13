@@ -5,11 +5,13 @@ import { roomManager } from "../../common";
 export interface RoomSetupProps {
   enterDisabled: boolean;
   leaveDisabled: boolean;
+  onAction?: () => void;
 }
 
 export const RoomSetup: FC<RoomSetupProps> = ({
   enterDisabled,
   leaveDisabled,
+  onAction: handleAction,
 }) => {
   const [roomId, setRoomId] = useState(0);
 
@@ -19,11 +21,13 @@ export const RoomSetup: FC<RoomSetupProps> = ({
 
   const handleJoin = useCallback(() => {
     roomManager.join(roomId);
-  }, [roomId]);
+    handleAction?.();
+  }, [roomId, handleAction]);
 
   const handleLeft = useCallback(() => {
     roomManager.left();
-  }, []);
+    handleAction?.();
+  }, [handleAction]);
   return (
     <div className="room-setting">
       <TextField

@@ -13,7 +13,12 @@ export const StatsChart: FC = () => {
   }, []);
   return (
     <div className="stats-chart">
-      <canvas ref={canvasRef} width="400" height="200" />
+      <canvas
+        ref={canvasRef}
+        width="400"
+        height="400"
+        style={{ maxHeight: "400px", maxWidth: "100%" }}
+      />
     </div>
   );
 };
