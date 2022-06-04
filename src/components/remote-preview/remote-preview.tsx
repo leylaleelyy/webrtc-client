@@ -5,9 +5,10 @@ import "./style.scss";
 
 export interface RemoteVideoProps {
   className?: string;
+  mark?: string;
 }
 
-export const RemoteVideo: React.FC<RemoteVideoProps> = ({ className }) => {
+export const RemoteVideo: React.FC<RemoteVideoProps> = ({ mark = "" }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +33,7 @@ export const RemoteVideo: React.FC<RemoteVideoProps> = ({ className }) => {
   return (
     <div className="container">
       <div>remote video:</div>
-      <LivePlayer videoRef={videoRef} loading={loading} />
+      <LivePlayer videoRef={videoRef} loading={loading} mark={mark} />
     </div>
   );
 };

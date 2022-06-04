@@ -15,14 +15,24 @@ export const RoomSetup: FC<RoomSetupProps> = ({
 }) => {
   const [roomId, setRoomId] = useState(0);
 
+  const [mark, setMark] = useState("");
+
   const handleInput = useCallback<ChangeEventHandler<HTMLInputElement>>((e) => {
     setRoomId(Number(e.target.value) || 0);
+  }, []);
+
+  const handleMark = useCallback<ChangeEventHandler<HTMLInputElement>>((e) => {
+    setMark(e.target.value);
   }, []);
 
   const handleJoin = useCallback(() => {
     roomManager.join(roomId);
     handleAction?.();
   }, [roomId, handleAction]);
+
+  const handleAddMark = useCallback(() => {
+    roomManager.addWaterMark(mark);
+  }, [mark]);
 
   const handleLeft = useCallback(() => {
     roomManager.left();
@@ -37,6 +47,16 @@ export const RoomSetup: FC<RoomSetupProps> = ({
         value={roomId}
         fullWidth
         onChange={handleInput}
+        size="small"
+      />
+
+      <TextField
+        required
+        id="outlined-required"
+        label="WaterMark"
+        value={mark}
+        fullWidth
+        onChange={handleMark}
         size="small"
       />
 
@@ -55,8 +75,17 @@ export const RoomSetup: FC<RoomSetupProps> = ({
           color="error"
           onClick={handleLeft}
           disabled={leaveDisabled}
+          sx={{ marginRight: 1 }}
         >
           Leave
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleAddMark}
+          disabled={!mark}
+          sx={{ marginRight: 1 }}
+        >
+          Add Mark
         </Button>
       </div>
     </div>

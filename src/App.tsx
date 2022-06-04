@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from "react";
-import { Producer } from "./pages";
+import { LiveRoom } from "./pages";
 import { createTheme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import { ColorModeContext } from "./components";
@@ -28,7 +28,7 @@ const App: FC = () => {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <Producer />
+        <LiveRoom />
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

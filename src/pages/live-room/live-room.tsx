@@ -37,9 +37,9 @@ interface LayoutProps {
   window?: () => Window;
 }
 
-export const Producer: React.FC<LayoutProps> = (props) => {
+export const LiveRoom: React.FC<LayoutProps> = (props) => {
   const { localStreamReady } = useLocalStream();
-  const { roomState } = useRoom();
+  const { roomState, remoteMark } = useRoom();
   const {
     videoSelected,
     audioSelected,
@@ -215,7 +215,7 @@ export const Producer: React.FC<LayoutProps> = (props) => {
                 flexGrow: 1,
               }}
             >
-              <RemoteVideo />
+              <RemoteVideo mark={remoteMark} />
             </PaperSection>
           </Stack>
           <PaperSection elevation={8}>

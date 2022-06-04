@@ -10,8 +10,11 @@ export enum RoomState {
 
 export type RoomStateChangListener = (state: RoomState) => void;
 
+export type MarkedChangeListener = (mark: string) => void;
+
 export interface RoomEventMap {
   roomStateChange: RoomStateChangListener;
+  markedChange: MarkedChangeListener;
 }
 class RoomManager {
   private roomId: number | undefined;
@@ -26,6 +29,8 @@ class RoomManager {
 
   private roomStateChangeListeners: RoomStateChangListener[] = [];
 
+  private markedChangedListeners: MarkedChangeListener[] = [];
+
   private setState(state: RoomState) {
     this.roomState = state;
     this.roomStateChangeListeners.forEach((listener) => listener(state));
@@ -38,7 +43,7 @@ class RoomManager {
     } else {
       this.socket = io("https://socket.leylalee.top");
     }
-    this.socket = io("https://socket.leylalee.top");
+
     this.socket.on("joined", (roomId, socketId, userCount) => {
       console.log(`receive joined message: ${roomId} ${socketId} ${userCount}`);
       this.roomId = roomId;
@@ -79,6 +84,11 @@ class RoomManager {
       this.setState(RoomState.leave);
       this.rtcManager?.close();
       this.rtcManager = undefined;
+    });
+
+    this.socket.on("marked", (mark: string) => {
+      console.log("mark", mark);
+      this.markedChangedListeners.forEach((listener) => listener(mark));
     });
 
     this.socket.on("message", (roomId, data) => {
@@ -123,6 +133,10 @@ class RoomManager {
     this.socket?.emit("join", localRoomId);
   }
 
+  addWaterMark(mark: string) {
+    this.socket?.emit("add_mark", this.roomId, mark);
+  }
+
   left() {
     this.socket?.emit("leave", this.roomId);
     this.rtcManager?.close();
@@ -136,6 +150,9 @@ class RoomManager {
     if (type === "roomStateChange") {
       this.roomStateChangeListeners.push(listener);
     }
+    if (type === "markedChange") {
+      this.markedChangedListeners.push(listener as MarkedChangeListener);
+    }
   }
 
   removeListener<K extends keyof RoomEventMap>(
@@ -146,6 +163,14 @@ class RoomManager {
       const targetIndex = this.roomStateChangeListeners.indexOf(listener);
       if (targetIndex > -1) {
         this.roomStateChangeListeners.splice(targetIndex, 1);
+      }
+    }
+    if (type === "markedChange") {
+      const targetIndex = this.markedChangedListeners.indexOf(
+        listener as MarkedChangeListener
+      );
+      if (targetIndex > -1) {
+        this.markedChangedListeners.splice(targetIndex, 1);
       }
     }
   }

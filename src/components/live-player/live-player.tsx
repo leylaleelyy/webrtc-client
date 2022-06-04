@@ -1,10 +1,11 @@
 import { CircularProgress, styled } from "@mui/material";
-import { FC, MutableRefObject, useEffect } from "react";
+import { FC, MutableRefObject, useEffect, useState } from "react";
 import "./style.scss";
 
 export interface LivePlayerProps {
   videoRef: MutableRefObject<HTMLVideoElement | null>;
   loading: boolean;
+  mark?: string;
 }
 
 const Loading = styled(CircularProgress)({
@@ -12,37 +13,6 @@ const Loading = styled(CircularProgress)({
   left: "calc(50% - 20px)",
   top: "calc(50% - 20px)",
 });
-
-function addWaterMarker(
-  str: string,
-  ref: MutableRefObject<HTMLVideoElement | null>
-) {
-  let cpyName = str;
-  if (str.length > 16) {
-    cpyName = str.substring(0, 16);
-  }
-  const can = document.createElement("canvas") as HTMLCanvasElement;
-  const video = ref.current as HTMLVideoElement;
-  video.appendChild(can);
-  can.width = 180;
-  can.height = 110;
-  can.style.display = "none";
-  can.style.zIndex = "999";
-  const ctx = can.getContext("2d");
-  ctx?.rotate((-25 * Math.PI) / 180);
-  if (ctx) {
-    ctx.font = "800 30px Microsoft JhengHei";
-    ctx.fillStyle = "#fff";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    if (ctx.measureText(cpyName).width > 180) {
-      const size = 180 / cpyName.length;
-      ctx.font = "800 " + size + "px " + " Microsoft JhengHei";
-    }
-    ctx.fillText(cpyName, 60, 100);
-  }
-  video.style.backgroundImage = "url(" + can.toDataURL("image/png") + ")";
-}
 
 // 配置类型定义
 type imgOptions = {
@@ -185,20 +155,20 @@ function genWaterMark({
   document.head.appendChild(styleEl);
 }
 
-const option = {
-  content: "测试水印",
-  className: "watermarked",
-};
-
-export const LivePlayer: FC<LivePlayerProps> = ({ videoRef, loading }) => {
+export const LivePlayer: FC<LivePlayerProps> = ({
+  videoRef,
+  loading,
+  mark = "",
+}) => {
+  const [clsName, setClassName] = useState("live-player-container");
   useEffect(() => {
-    // if (videoRef) {
-    //   addWaterMarker("water", videoRef);
-    // }
-    genWaterMark(option);
-  }, [videoRef]);
+    if (mark) {
+      genWaterMark({ className: "watermarked", content: mark });
+      setClassName("live-player-container watermarked");
+    }
+  }, [mark]);
   return (
-    <div className="live-player-container watermarked">
+    <div className={clsName}>
       {loading && <Loading />}
       <video ref={videoRef} autoPlay playsInline muted />
     </div>
